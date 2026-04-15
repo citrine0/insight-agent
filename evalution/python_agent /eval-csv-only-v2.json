@@ -1,0 +1,1123 @@
+{
+  "metadata": {
+    "version": "1.0-csv",
+    "eval_type": "SIMPLE",
+    "description": "CSV评测集 v1.0 — 面向 Complex 路径前置验证优化版 (35题)\n变更摘要:\n- 移除5道低难度/低Complex关联题 (S-XLS-08, S-CSV-10, S-PY-16, S-PY-17, S-PY-05)\n- 新增10道 Complex 前置能力题:\n  · GAP-1 环比变化率: S-MOM-01~04 (4题)\n  · GAP-2 加权平均: S-WA-01~03 (3题)\n  · GAP-3 非GMV指标: S-NM-01~02 (2题)\n  · GAP-6 跨维度交叉: S-CD-01 (1题)\n难度分布中心从 5.3 上移至 6.3",
+    "total_questions": 35,
+    "data_sources": {
+      "csv_excel": {
+        "daily_file": "test_data_business_metrics.csv",
+        "description": "单sheet宽表(4992行): business_metrics",
+        "columns_daily": [
+          "date",
+          "channel",
+          "category",
+          "gmv",
+          "traffic",
+          "conversion_rate",
+          "avg_price",
+          "competitor_price",
+          "marketing_spend"
+        ],
+        "row_count": 4992
+      }
+    },
+    "pass_criteria": "评分 >= 80% 视为通过",
+    "answer_tolerance": 0.01,
+    "generated_at": "2026-03-06T00:00:00",
+    "based_on": "eval-csv-only.json v6.0",
+    "gap_coverage": {
+      "GAP-1_环比变化率": [
+        "S-MOM-01",
+        "S-MOM-02",
+        "S-MOM-03",
+        "S-MOM-04"
+      ],
+      "GAP-2_加权平均": [
+        "S-WA-01",
+        "S-WA-02",
+        "S-WA-03"
+      ],
+      "GAP-3_非GMV指标": [
+        "S-NM-01",
+        "S-NM-02"
+      ],
+      "GAP-6_跨维度交叉": [
+        "S-CD-01"
+      ]
+    },
+    "removed_questions": [
+      "S-XLS-08",
+      "S-CSV-10",
+      "S-PY-16",
+      "S-PY-17",
+      "S-PY-05"
+    ],
+    "complex_prerequisite_groups": {
+      "环比计算": {
+        "questions": [
+          "S-CSV-07",
+          "S-MOM-01",
+          "S-MOM-02",
+          "S-MOM-03",
+          "S-MOM-04",
+          "S-PY-25"
+        ],
+        "required_pass_rate": 0.85,
+        "note": "Complex 路径 100% 依赖环比计算"
+      },
+      "加权平均": {
+        "questions": [
+          "S-WA-01",
+          "S-WA-02",
+          "S-PY-30"
+        ],
+        "required_pass_rate": 0.85,
+        "note": "Complex 中 conversion_rate/avg_price 假设验证依赖加权平均"
+      },
+      "基础聚合": {
+        "questions": [
+          "S-CSV-01",
+          "S-CSV-02",
+          "S-CSV-03",
+          "S-NM-01",
+          "S-NM-02"
+        ],
+        "required_pass_rate": 0.8,
+        "note": "所有路径的基础能力"
+      },
+      "多维度分析": {
+        "questions": [
+          "S-WA-03",
+          "S-CD-01",
+          "S-PY-20"
+        ],
+        "required_pass_rate": 0.8,
+        "note": "Complex 跨渠道/品类归因依赖"
+      }
+    }
+  },
+  "questions": [
+    {
+      "id": "S-CSV-01",
+      "difficulty": 2,
+      "category": "csv_single_sum",
+      "data_source": "csv",
+      "question": "10月份的总GMV是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "total_gmv",
+        "value": 227796001.05
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "S-CSV-02",
+      "difficulty": 3,
+      "category": "csv_grouped",
+      "data_source": "csv",
+      "question": "10月份各渠道的总GMV分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "channel",
+        "value_field": "total_gmv",
+        "values": [
+          {
+            "channel": "JD",
+            "total_gmv": 85901503.17
+          },
+          {
+            "channel": "Tmall",
+            "total_gmv": 75623949.01
+          },
+          {
+            "channel": "Douyin",
+            "total_gmv": 40559241.29
+          },
+          {
+            "channel": "WeChat",
+            "total_gmv": 25711307.58
+          }
+        ],
+        "row_count": 4
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "S-CSV-03",
+      "difficulty": 4,
+      "category": "csv_filtered",
+      "data_source": "csv",
+      "question": "Douyin渠道电子品类10月的GMV是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "total_gmv",
+        "value": 24463979.94
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "S-CSV-09",
+      "difficulty": 4,
+      "category": "csv_chart_bar",
+      "data_source": "csv",
+      "question": "用柱状图展示10月各品类的总GMV",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "category",
+        "value_field": "total_gmv",
+        "values": [
+          {
+            "category": "Electronics",
+            "total_gmv": 137529379.7
+          },
+          {
+            "category": "Fashion",
+            "total_gmv": 46200417.27
+          },
+          {
+            "category": "Beauty",
+            "total_gmv": 26158205.73
+          },
+          {
+            "category": "Food",
+            "total_gmv": 17907998.35
+          }
+        ],
+        "row_count": 4,
+        "should_have_chart": true,
+        "chart_validation": {
+          "expected_type": "bar",
+          "expected_data_points": 4
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 45,
+        "chart_generated": true,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "S-NM-01",
+      "difficulty": 4,
+      "category": "csv_non_gmv_grouped",
+      "data_source": "csv",
+      "question": "10月份各渠道的总流量(traffic)分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "channel",
+        "value_field": "total_traffic",
+        "values": [
+          {
+            "channel": "Tmall",
+            "total_traffic": 6882289
+          },
+          {
+            "channel": "JD",
+            "total_traffic": 6517855
+          },
+          {
+            "channel": "Douyin",
+            "total_traffic": 5488347
+          },
+          {
+            "channel": "WeChat",
+            "total_traffic": 3561297
+          }
+        ],
+        "row_count": 4
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      },
+      "_gap": "GAP-3: 非GMV指标聚合 — 验证 Agent 对 traffic 字段的正确聚合"
+    },
+    {
+      "id": "S-PY-18",
+      "difficulty": 4,
+      "category": "python_daily_avg_change",
+      "data_source": "csv",
+      "question": "10月份每日总GMV的日均变化量（相邻两天的差值平均）是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "avg_daily_change",
+        "value": -20057.78,
+        "description": "oct每日GMV diff()的mean"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.05
+      }
+    },
+    {
+      "id": "S-PY-19",
+      "difficulty": 4,
+      "category": "python_cost_per_traffic",
+      "data_source": "csv",
+      "question": "10月份哪个渠道的单位流量获取成本（营销费用/流量）最低？成本是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "values": {
+          "channel": "WeChat",
+          "cost_per_traffic": 0.41
+        },
+        "description": "WeChat单位流量成本最低，约0.41",
+        "field": "cost_per_traffic",
+        "value": 0.41
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.03
+      }
+    },
+    {
+      "id": "S-MOM-01",
+      "difficulty": 5,
+      "category": "csv_mom_single_value",
+      "data_source": "csv",
+      "question": "8月整体GMV的环比变化率是多少？（相比7月）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "fields": [
+          "previous_gmv",
+          "current_gmv",
+          "change_pct"
+        ],
+        "values": {
+          "previous_gmv": 209427469.11,
+          "current_gmv": 206244027.92,
+          "change_pct": -1.52
+        },
+        "description": "8月GMV环比下降1.52%"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.02
+      },
+      "_gap": "GAP-1: 环比变化率 — 最基础的单值环比计算，负增长场景"
+    },
+    {
+      "id": "S-NM-02",
+      "difficulty": 5,
+      "category": "csv_non_gmv_grouped_spend",
+      "data_source": "csv",
+      "question": "10月份各渠道的总营销费用(marketing_spend)分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "channel",
+        "value_field": "total_marketing",
+        "values": [
+          {
+            "channel": "JD",
+            "total_marketing": 3070078.56
+          },
+          {
+            "channel": "Tmall",
+            "total_marketing": 2851782.51
+          },
+          {
+            "channel": "Douyin",
+            "total_marketing": 2526304.26
+          },
+          {
+            "channel": "WeChat",
+            "total_marketing": 1442464.06
+          }
+        ],
+        "row_count": 4
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      },
+      "_gap": "GAP-3: 非GMV指标聚合 — 验证 Agent 对 marketing_spend 字段的正确聚合"
+    },
+    {
+      "id": "S-CSV-04",
+      "difficulty": 5,
+      "category": "csv_time_series",
+      "data_source": "csv",
+      "question": "展示1-10月的整体月度GMV趋势",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "time_series",
+        "time_field": "month",
+        "value_field": "total_gmv",
+        "values": [
+          {
+            "month": "2025-01",
+            "total_gmv": 222401468.85
+          },
+          {
+            "month": "2025-02",
+            "total_gmv": 162035272.79
+          },
+          {
+            "month": "2025-03",
+            "total_gmv": 212767431.9
+          },
+          {
+            "month": "2025-04",
+            "total_gmv": 195774839.61
+          },
+          {
+            "month": "2025-05",
+            "total_gmv": 217968122.8
+          },
+          {
+            "month": "2025-06",
+            "total_gmv": 202840014.48
+          },
+          {
+            "month": "2025-07",
+            "total_gmv": 209427469.11
+          },
+          {
+            "month": "2025-08",
+            "total_gmv": 206244027.92
+          },
+          {
+            "month": "2025-09",
+            "total_gmv": 203983213.81
+          },
+          {
+            "month": "2025-10",
+            "total_gmv": 227796001.05
+          }
+        ],
+        "row_count": 10,
+        "should_have_chart": true,
+        "chart_validation": {
+          "expected_type": "line",
+          "expected_data_points": 10
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 45,
+        "chart_generated": true,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "S-CSV-05",
+      "difficulty": 5,
+      "category": "csv_ranking",
+      "data_source": "csv",
+      "question": "10月份GMV最高的前2个品类是哪些？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "ranked_list",
+        "group_field": "category",
+        "value_field": "total_gmv",
+        "values": [
+          {
+            "category": "Electronics",
+            "total_gmv": 137529379.7
+          },
+          {
+            "category": "Fashion",
+            "total_gmv": 46200417.27
+          }
+        ],
+        "row_count": 2
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "require_correct_order": true,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "S-PY-20",
+      "difficulty": 5,
+      "category": "python_rank_within_group",
+      "data_source": "csv",
+      "question": "10月份每个渠道中GMV最高的品类分别是什么？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "values": [
+          {
+            "channel": "Douyin",
+            "category": "Electronics"
+          },
+          {
+            "channel": "JD",
+            "category": "Electronics"
+          },
+          {
+            "channel": "Tmall",
+            "category": "Electronics"
+          },
+          {
+            "channel": "WeChat",
+            "category": "Electronics"
+          }
+        ],
+        "description": "所有渠道GMV最高的品类都是Electronics",
+        "group_field": "channel",
+        "value_field": "category",
+        "row_count": 4
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "S-CSV-07",
+      "difficulty": 6,
+      "category": "csv_period_comparison",
+      "data_source": "csv",
+      "question": "10月GMV相比9月变化了多少？增长率是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "fields": [
+          "previous_gmv",
+          "current_gmv",
+          "change",
+          "change_pct"
+        ],
+        "values": {
+          "previous_gmv": 203983213.81,
+          "current_gmv": 227796001.05,
+          "change": 23812787.24,
+          "change_pct": 11.67
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.02
+      }
+    },
+    {
+      "id": "S-MOM-02",
+      "difficulty": 6,
+      "category": "csv_mom_grouped",
+      "data_source": "csv",
+      "question": "各渠道8月GMV的环比变化率分别是多少？（相比7月）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "channel",
+        "value_field": "change_pct",
+        "values": [
+          {
+            "channel": "Tmall",
+            "change_pct": 2.25
+          },
+          {
+            "channel": "WeChat",
+            "change_pct": 1.71
+          },
+          {
+            "channel": "Douyin",
+            "change_pct": -4.04
+          },
+          {
+            "channel": "JD",
+            "change_pct": -4.61
+          }
+        ],
+        "row_count": 4,
+        "description": "Tmall和WeChat环比正增长，Douyin和JD环比负增长"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 35,
+        "value_tolerance": 0.03
+      },
+      "_gap": "GAP-1: 环比变化率 — 分组环比计算，包含正负增长混合场景"
+    },
+    {
+      "id": "S-WA-01",
+      "difficulty": 6,
+      "category": "csv_weighted_avg_cvr",
+      "data_source": "csv",
+      "question": "10月份各渠道的加权平均转化率分别是多少？（按流量加权：sum(traffic×conversion_rate)/sum(traffic)）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "channel",
+        "value_field": "weighted_avg_cvr",
+        "values": [
+          {
+            "channel": "JD",
+            "weighted_avg_cvr": 4.88
+          },
+          {
+            "channel": "Tmall",
+            "weighted_avg_cvr": 4.24
+          },
+          {
+            "channel": "Douyin",
+            "weighted_avg_cvr": 3.54
+          },
+          {
+            "channel": "WeChat",
+            "weighted_avg_cvr": 2.97
+          }
+        ],
+        "row_count": 4,
+        "description": "加权平均转化率 = sum(traffic * conversion_rate) / sum(traffic)"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 35,
+        "value_tolerance": 0.03
+      },
+      "_gap": "GAP-2: 加权平均 — Complex 中 conversion_rate 假设验证的核心计算方式"
+    },
+    {
+      "id": "S-PY-23",
+      "difficulty": 6,
+      "category": "python_top_pct_contribution",
+      "data_source": "csv",
+      "question": "10月份GMV最高的前10%记录，贡献了总GMV的多少百分比？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "top_10pct_share",
+        "value": 36.81,
+        "description": "前10%记录(约50条)贡献约36.81%的总GMV"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 35,
+        "value_tolerance": 0.03
+      }
+    },
+    {
+      "id": "S-PY-25",
+      "difficulty": 6,
+      "category": "python_avg_mom_growth",
+      "data_source": "csv",
+      "question": "计算2025年各月GMV的月环比增长率，平均月环比增长率是多少？（不含11月不完整数据，只算1-10月）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "avg_mom_growth_pct",
+        "value": 1.43,
+        "description": "1-10月环比增长率均值（排除11月不完整），约1.43%"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 35,
+        "value_tolerance": 0.1
+      }
+    },
+    {
+      "id": "S-PY-30",
+      "difficulty": 6,
+      "category": "python_conversion_efficiency",
+      "data_source": "csv",
+      "question": "10月份哪个渠道的单次有效转化产出的GMV最高？（GMV / (流量×转化率/100)）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "values": {
+          "channel": "JD",
+          "gmv_per_conversion": 260.51
+        },
+        "description": "JD单次有效转化GMV最高: 273.29",
+        "field": "gmv_per_conversion",
+        "value": 260.51
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 35,
+        "value_tolerance": 0.03
+      }
+    },
+    {
+      "id": "S-MOM-03",
+      "difficulty": 7,
+      "category": "csv_mom_by_category",
+      "data_source": "csv",
+      "question": "各品类10月GMV的环比变化率分别是多少？（相比9月）哪个品类增长最快？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "category",
+        "value_field": "change_pct",
+        "values": [
+          {
+            "category": "Electronics",
+            "change_pct": 16.75
+          },
+          {
+            "category": "Food",
+            "change_pct": 6.73
+          },
+          {
+            "category": "Beauty",
+            "change_pct": 4.9
+          },
+          {
+            "category": "Fashion",
+            "change_pct": 3.89
+          }
+        ],
+        "row_count": 4,
+        "description": "Electronics环比增长最快(16.75%)，其次Food(6.73%)"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 35,
+        "value_tolerance": 0.03
+      },
+      "_gap": "GAP-1: 环比变化率 — 品类维度分组环比，正增长场景"
+    },
+    {
+      "id": "S-WA-02",
+      "difficulty": 7,
+      "category": "csv_effective_price",
+      "data_source": "csv",
+      "question": "10月份各渠道的有效客单价是多少？（有效客单价 = 总GMV / 总有效转化数，有效转化数 = 流量 × 转化率/100）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "channel",
+        "value_field": "avg_order_value",
+        "values": [
+          {
+            "channel": "JD",
+            "avg_order_value": 270.34
+          },
+          {
+            "channel": "Tmall",
+            "avg_order_value": 259.09
+          },
+          {
+            "channel": "WeChat",
+            "avg_order_value": 242.88
+          },
+          {
+            "channel": "Douyin",
+            "avg_order_value": 208.52
+          }
+        ],
+        "row_count": 4,
+        "description": "有效客单价 = sum(gmv) / sum(traffic * conversion_rate / 100)"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 35,
+        "value_tolerance": 0.03
+      },
+      "_gap": "GAP-2: 加权平均 — 派生指标客单价，Complex 中 avg_price 假设验证依赖此计算"
+    },
+    {
+      "id": "S-WA-03",
+      "difficulty": 7,
+      "category": "csv_gmv_share",
+      "data_source": "csv",
+      "question": "10月份各渠道的GMV占比（份额）分别是多少百分比？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "channel",
+        "value_field": "gmv_share_pct",
+        "values": [
+          {
+            "channel": "JD",
+            "gmv_share_pct": 37.71
+          },
+          {
+            "channel": "Tmall",
+            "gmv_share_pct": 33.2
+          },
+          {
+            "channel": "Douyin",
+            "gmv_share_pct": 17.81
+          },
+          {
+            "channel": "WeChat",
+            "gmv_share_pct": 11.29
+          }
+        ],
+        "row_count": 4,
+        "description": "各渠道GMV占比 = 渠道GMV / 总GMV × 100"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.02
+      },
+      "_gap": "GAP-2: 占比/份额 — Complex 归因中判断各渠道贡献度的基础能力"
+    },
+    {
+      "id": "S-CSV-06",
+      "difficulty": 7,
+      "category": "csv_derived_roi",
+      "data_source": "csv",
+      "question": "10月份各渠道的ROI是多少？（GMV/营销费用）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "derived_calculation",
+        "group_field": "channel",
+        "value_field": "roi",
+        "formula": "SUM(gmv) / SUM(marketing_spend)",
+        "values": [
+          {
+            "channel": "JD",
+            "roi": 27.98
+          },
+          {
+            "channel": "Tmall",
+            "roi": 26.52
+          },
+          {
+            "channel": "WeChat",
+            "roi": 17.82
+          },
+          {
+            "channel": "Douyin",
+            "roi": 16.05
+          }
+        ],
+        "row_count": 4
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.02
+      }
+    },
+    {
+      "id": "S-PY-02",
+      "difficulty": 7,
+      "category": "python_std_volatility",
+      "data_source": "csv",
+      "question": "10月份每日总GMV的标准差是多少？（衡量日间波动）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "daily_gmv_std",
+        "value": 657525.0,
+        "description": "10月日GMV标准差"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.05
+      }
+    },
+    {
+      "id": "S-PY-03",
+      "difficulty": 7,
+      "category": "python_percentile",
+      "data_source": "csv",
+      "question": "10月份日总GMV的90分位数是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "p90_gmv",
+        "value": 8151396.82,
+        "description": "10月日GMV的P90"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.03
+      }
+    },
+    {
+      "id": "S-PY-26",
+      "difficulty": 7,
+      "category": "python_seasonal_index",
+      "data_source": "csv",
+      "question": "计算1-10月的季节性指数（各月GMV/月均GMV×100），哪个月份的季节性指数最高？指数值是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "values": {
+          "peak_month": 10,
+          "seasonal_index": 110.51
+        },
+        "description": "10月季节性指数最高: 110.51",
+        "field": "seasonal_index",
+        "value": 110.51
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 40,
+        "value_tolerance": 0.05
+      }
+    },
+    {
+      "id": "S-PY-28",
+      "difficulty": 7,
+      "category": "python_linear_trend",
+      "data_source": "csv",
+      "question": "对10月份每日总GMV做线性回归趋势分析，日均GMV的变化斜率是多少？R²是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "values": {
+          "slope": -12349.56,
+          "r_squared": 0.0292
+        },
+        "description": "线性回归斜率为负（下降趋势），R²很低说明线性趋势不明显",
+        "fields": [
+          "slope",
+          "r_squared"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 40,
+        "value_tolerance": 0.05
+      }
+    },
+    {
+      "id": "S-MOM-04",
+      "difficulty": 8,
+      "category": "csv_mom_double_filter",
+      "data_source": "csv",
+      "question": "抖音渠道美妆品类8月GMV的环比变化率是多少？（相比7月）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "fields": [
+          "previous_gmv",
+          "current_gmv",
+          "change_pct"
+        ],
+        "values": {
+          "previous_gmv": 4765978.93,
+          "current_gmv": 4843863.2,
+          "change_pct": 1.63
+        },
+        "description": "Douyin Beauty 8月环比增长1.63%"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 35,
+        "value_tolerance": 0.03
+      },
+      "_gap": "GAP-1: 环比变化率 — 双过滤(channel+category)+环比，模拟 Complex 中单假设验证场景"
+    },
+    {
+      "id": "S-CD-01",
+      "difficulty": 8,
+      "category": "csv_cross_dimension",
+      "data_source": "csv",
+      "question": "10月份按渠道和品类交叉分析，GMV最高的前5个渠道-品类组合是哪些？GMV分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "cross_dimension",
+        "dimensions": [
+          "channel",
+          "category"
+        ],
+        "value_field": "total_gmv",
+        "values": [
+          {
+            "channel": "JD",
+            "category": "Electronics",
+            "total_gmv": 52481441.97
+          },
+          {
+            "channel": "Tmall",
+            "category": "Electronics",
+            "total_gmv": 45574593.27
+          },
+          {
+            "channel": "Douyin",
+            "category": "Electronics",
+            "total_gmv": 24463979.94
+          },
+          {
+            "channel": "JD",
+            "category": "Fashion",
+            "total_gmv": 17072337.08
+          },
+          {
+            "channel": "Tmall",
+            "category": "Fashion",
+            "total_gmv": 15413653.56
+          }
+        ],
+        "row_count": 5,
+        "description": "渠道×品类交叉分析Top5，Electronics在JD/Tmall/Douyin占前3"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 40,
+        "require_correct_order": true,
+        "value_tolerance": 0.01
+      },
+      "_gap": "GAP-6: 跨维度交叉 — Complex 中跨渠道/品类归因的基础"
+    },
+    {
+      "id": "S-PY-01",
+      "difficulty": 8,
+      "category": "python_rolling_avg",
+      "data_source": "csv",
+      "question": "计算Douyin渠道10月份每天GMV的7日移动平均值，最后一天的移动平均是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "rolling_7d_avg",
+        "value": 1323627.63,
+        "description": "Douyin 10月日GMV的7日移动平均最后值"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 45,
+        "value_tolerance": 0.03
+      }
+    },
+    {
+      "id": "S-PY-06",
+      "difficulty": 8,
+      "category": "python_weekday_analysis",
+      "data_source": "csv",
+      "question": "10月份周末的平均GMV比工作日高出多少百分比？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "fields": [
+          "weekday_avg_gmv",
+          "weekend_avg_gmv",
+          "diff_pct"
+        ],
+        "values": {
+          "weekday_avg_gmv": 450703.63,
+          "weekend_avg_gmv": 483883.32,
+          "diff_pct": 7.36
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 45,
+        "value_tolerance": 0.05
+      }
+    },
+    {
+      "id": "S-PY-12",
+      "difficulty": 8,
+      "category": "python_period_growth",
+      "data_source": "csv",
+      "question": "第三季度的月均GMV相比上半年的月均GMV增长了多少百分比？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "fields": [
+          "previous_avg_gmv",
+          "current_avg_gmv",
+          "change_pct"
+        ],
+        "values": {
+          "previous_avg_gmv": 202297858.41,
+          "current_avg_gmv": 206551570.28,
+          "change_pct": 2.1
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 45,
+        "value_tolerance": 0.05
+      }
+    },
+    {
+      "id": "S-PY-04",
+      "difficulty": 9,
+      "category": "python_correlation",
+      "data_source": "csv",
+      "question": "10月份营销费用和GMV之间的相关系数是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "correlation",
+        "value": 0.92,
+        "description": "marketing_spend 与 gmv 的 Pearson 相关系数"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.05
+      }
+    },
+    {
+      "id": "S-PY-08",
+      "difficulty": 9,
+      "category": "python_coefficient_variation",
+      "data_source": "csv",
+      "question": "10月份各渠道GMV的变异系数（标准差/平均值×100）分别是多少？哪个渠道波动最大？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "channel",
+        "value_field": "cv_pct",
+        "values": [
+          {
+            "channel": "Tmall",
+            "cv_pct": 91.42
+          },
+          {
+            "channel": "JD",
+            "cv_pct": 90.98
+          },
+          {
+            "channel": "Douyin",
+            "cv_pct": 90.55
+          },
+          {
+            "channel": "WeChat",
+            "cv_pct": 84.35
+          }
+        ],
+        "row_count": 4
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.05
+      }
+    },
+    {
+      "id": "S-PY-09",
+      "difficulty": 9,
+      "category": "python_max_daily_growth",
+      "data_source": "csv",
+      "question": "10月份哪一天的日环比GMV增长率最高？增长率是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "fields": [
+          "date",
+          "change_pct"
+        ],
+        "values": {
+          "date": "2025-10-25",
+          "change_pct": 23.4
+        },
+        "description": "10月份日环比GMV增长率最高的日期"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 45,
+        "value_tolerance": 0.05
+      }
+    },
+    {
+      "id": "S-PY-11",
+      "difficulty": 10,
+      "category": "python_outlier_detection",
+      "data_source": "csv",
+      "question": "用IQR方法检测10月份GMV的异常值（大于Q3+1.5*IQR），一共有多少条异常记录？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "outlier_count",
+        "value": 58,
+        "description": "IQR异常值检测: Q1=146935.84, Q3=537611.62, IQR=390675.78, upper=1123625.29"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 45,
+        "value_tolerance": 0.05
+      }
+    }
+  ]
+}

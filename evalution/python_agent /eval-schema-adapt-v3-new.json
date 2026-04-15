@@ -1,0 +1,1116 @@
+{
+  "metadata": {
+    "version": "3.0-schema-adapt",
+    "eval_type": "SIMPLE",
+    "description": "CSV评测集 v3.0 — Schema适应能力验证集\n使用结构相似但列名、维度值、时间范围完全不同的CSV数据。\n测试模型的 schema 适应能力，而非对特定列名/值的记忆。\n- 题目数量: 35题\n- 前置能力组: 30题 (86%)\n- 非前置能力组: 5题",
+    "total_questions": 35,
+    "data_sources": {
+      "csv_excel": {
+        "daily_file": "test_data_schema_adapt.csv",
+        "description": "单sheet宽表(1005行): schema适应测试数据",
+        "columns": [
+          "order_date",
+          "platform",
+          "product_line",
+          "revenue",
+          "visitors",
+          "cvr_pct",
+          "unit_price",
+          "market_price",
+          "ad_cost"
+        ],
+        "row_count": 1005
+      }
+    },
+    "schema_adaptation_test": {
+      "column_mapping": {
+        "date → order_date": "日期列名变化",
+        "channel → platform": "渠道维度列名变化",
+        "category → product_line": "品类维度列名变化",
+        "gmv → revenue": "核心指标列名变化",
+        "traffic → visitors": "流量指标列名变化",
+        "conversion_rate → cvr_pct": "转化率列名变化",
+        "avg_price → unit_price": "价格列名变化",
+        "competitor_price → market_price": "竞品价格列名变化",
+        "marketing_spend → ad_cost": "营销费用列名变化"
+      },
+      "dimension_changes": {
+        "channels": "4个(Douyin/JD/Tmall/WeChat) → 3个(Amazon/Shopee/Lazada)",
+        "categories": "4个(Beauty/Electronics/Fashion/Food) → 5个(Sports/Home/Toys/Snacks/Stationery)",
+        "time_range": "2025-01~11 (312天) → 2024-04~06 (67天)",
+        "row_count": "4992 → 1005"
+      }
+    },
+    "pass_criteria": "评分 >= 80% 视为通过",
+    "answer_tolerance": 0.01,
+    "generated_at": "2026-03-09T00:00:00",
+    "complex_prerequisite_groups": {
+      "环比计算": {
+        "questions": [
+          "MOM-01",
+          "MOM-02",
+          "MOM-03",
+          "MOM-04",
+          "MOM-05",
+          "MOM-06",
+          "MOM-07",
+          "MOM-08",
+          "MOM-09"
+        ],
+        "required_pass_rate": 0.85,
+        "note": "Complex 路径 100% 依赖环比计算"
+      },
+      "加权平均": {
+        "questions": [
+          "WA-01",
+          "WA-02",
+          "WA-03",
+          "WA-04",
+          "WA-05",
+          "WA-06",
+          "WA-07"
+        ],
+        "required_pass_rate": 0.85,
+        "note": "Complex 中 cvr/unit_price 假设验证依赖加权平均"
+      },
+      "基础聚合": {
+        "questions": [
+          "BA-01",
+          "BA-02",
+          "BA-03",
+          "BA-04",
+          "BA-05",
+          "BA-06",
+          "BA-07",
+          "BA-08"
+        ],
+        "required_pass_rate": 0.8,
+        "note": "所有路径的基础能力"
+      },
+      "多维度分析": {
+        "questions": [
+          "MD-01",
+          "MD-02",
+          "MD-03",
+          "MD-04",
+          "MD-05",
+          "MD-06"
+        ],
+        "required_pass_rate": 0.8,
+        "note": "Complex 跨平台/产品线归因依赖"
+      }
+    },
+    "difficulty_distribution": {
+      "2": 1,
+      "3": 1,
+      "4": 5,
+      "5": 5,
+      "6": 6,
+      "7": 8,
+      "8": 5,
+      "9": 3,
+      "10": 1
+    }
+  },
+  "questions": [
+    {
+      "id": "BA-01",
+      "difficulty": 2,
+      "category": "agg_single_sum",
+      "data_source": "csv",
+      "question": "5月份的总revenue是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "total_revenue",
+        "value": 81129173.4
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "BA-02",
+      "difficulty": 3,
+      "category": "agg_grouped",
+      "data_source": "csv",
+      "question": "4月份各产品线(product_line)的总广告费用(ad_cost)分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "product_line",
+        "value_field": "total_ad_cost",
+        "values": [
+          {
+            "product_line": "Home",
+            "total_ad_cost": 1818618.23
+          },
+          {
+            "product_line": "Sports",
+            "total_ad_cost": 1113996.3
+          },
+          {
+            "product_line": "Toys",
+            "total_ad_cost": 636249.66
+          },
+          {
+            "product_line": "Snacks",
+            "total_ad_cost": 356168.16
+          },
+          {
+            "product_line": "Stationery",
+            "total_ad_cost": 250611.17
+          }
+        ],
+        "row_count": 5
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "BA-03",
+      "difficulty": 4,
+      "category": "agg_filtered",
+      "data_source": "csv",
+      "question": "Shopee平台Toys产品线5月的revenue是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "total_revenue",
+        "value": 4150688.39
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "BA-04",
+      "difficulty": 4,
+      "category": "agg_non_rev_grouped",
+      "data_source": "csv",
+      "question": "4月份各平台(platform)的总访客数(visitors)分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "platform",
+        "value_field": "total_visitors",
+        "values": [
+          {
+            "platform": "Shopee",
+            "total_visitors": 5084451.0
+          },
+          {
+            "platform": "Lazada",
+            "total_visitors": 3719037.0
+          },
+          {
+            "platform": "Amazon",
+            "total_visitors": 3649676.0
+          }
+        ],
+        "row_count": 3
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "BA-05",
+      "difficulty": 4,
+      "category": "agg_platform_period",
+      "data_source": "csv",
+      "question": "Amazon平台4-5月的总revenue是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "total_revenue",
+        "value": 67270694.62
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "BA-06",
+      "difficulty": 5,
+      "category": "agg_ranked_asc",
+      "data_source": "csv",
+      "question": "5月份各平台的总广告费用(ad_cost)从低到高排列分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "platform",
+        "value_field": "total_ad_cost",
+        "values": [
+          {
+            "platform": "Lazada",
+            "total_ad_cost": 1375420.83
+          },
+          {
+            "platform": "Shopee",
+            "total_ad_cost": 1470658.18
+          },
+          {
+            "platform": "Amazon",
+            "total_ad_cost": 1798003.2
+          }
+        ],
+        "row_count": 3
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "BA-07",
+      "difficulty": 5,
+      "category": "agg_avg_daily",
+      "data_source": "csv",
+      "question": "5月份各产品线的日均revenue（每条记录的revenue平均值）分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "product_line",
+        "value_field": "avg_revenue",
+        "values": [
+          {
+            "product_line": "Home",
+            "avg_revenue": 361172.47
+          },
+          {
+            "product_line": "Sports",
+            "avg_revenue": 225309.65
+          },
+          {
+            "product_line": "Toys",
+            "avg_revenue": 137995.46
+          },
+          {
+            "product_line": "Snacks",
+            "avg_revenue": 91485.11
+          },
+          {
+            "product_line": "Stationery",
+            "avg_revenue": 56394.01
+          }
+        ],
+        "row_count": 5
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "BA-08",
+      "difficulty": 5,
+      "category": "agg_month_compare",
+      "data_source": "csv",
+      "question": "4月和5月的总revenue分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "values": {
+          "previous_revenue": 74212155.64,
+          "current_revenue": 81129173.4
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MOM-01",
+      "difficulty": 5,
+      "category": "mom_visitors_single",
+      "data_source": "csv",
+      "question": "5月整体访客数(visitors)的环比变化率是多少？（相比4月）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "change_pct",
+        "value": 11.06
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MOM-02",
+      "difficulty": 5,
+      "category": "mom_ad_single",
+      "data_source": "csv",
+      "question": "5月整体广告费用(ad_cost)的环比变化率是多少？（相比4月）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "change_pct",
+        "value": 11.22
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MOM-03",
+      "difficulty": 6,
+      "category": "mom_grouped_revenue",
+      "data_source": "csv",
+      "question": "各平台5月revenue的环比变化率分别是多少？（相比4月）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "platform",
+        "value_field": "change_pct",
+        "values": [
+          {
+            "platform": "Amazon",
+            "change_pct": 6.67
+          },
+          {
+            "platform": "Lazada",
+            "change_pct": 12.78
+          },
+          {
+            "platform": "Shopee",
+            "change_pct": 10.03
+          }
+        ],
+        "row_count": 3
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MOM-04",
+      "difficulty": 6,
+      "category": "mom_grouped_ad",
+      "data_source": "csv",
+      "question": "各产品线5月广告费用(ad_cost)的环比变化率分别是多少？（相比4月）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "product_line",
+        "value_field": "change_pct",
+        "values": [
+          {
+            "product_line": "Home",
+            "change_pct": 10.69
+          },
+          {
+            "product_line": "Snacks",
+            "change_pct": 11.26
+          },
+          {
+            "product_line": "Sports",
+            "change_pct": 12.67
+          },
+          {
+            "product_line": "Stationery",
+            "change_pct": 6.24
+          },
+          {
+            "product_line": "Toys",
+            "change_pct": 12.13
+          }
+        ],
+        "row_count": 5
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MOM-05",
+      "difficulty": 6,
+      "category": "mom_abs_and_rate",
+      "data_source": "csv",
+      "question": "5月总revenue相比4月变化了多少（绝对值）？环比增长率是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "values": {
+          "change": 6917017.76,
+          "change_pct": 9.32,
+          "previous_revenue": 74212155.64,
+          "current_revenue": 81129173.4
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MOM-06",
+      "difficulty": 7,
+      "category": "mom_by_prod_ranked",
+      "data_source": "csv",
+      "question": "各产品线5月revenue的环比变化率分别是多少？（相比4月）哪个产品线增长最快？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "product_line",
+        "value_field": "change_pct",
+        "values": [
+          {
+            "product_line": "Home",
+            "change_pct": 11.08
+          },
+          {
+            "product_line": "Snacks",
+            "change_pct": 10.36
+          },
+          {
+            "product_line": "Sports",
+            "change_pct": 7.37
+          },
+          {
+            "product_line": "Stationery",
+            "change_pct": 8.01
+          },
+          {
+            "product_line": "Toys",
+            "change_pct": 7.9
+          }
+        ],
+        "row_count": 5,
+        "fastest_growing_product_line": "Home"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MOM-07",
+      "difficulty": 7,
+      "category": "mom_visitors_by_plat",
+      "data_source": "csv",
+      "question": "各平台5月访客数(visitors)的环比变化率分别是多少？（相比4月）哪个平台增长最慢？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "platform",
+        "value_field": "change_pct",
+        "values": [
+          {
+            "platform": "Amazon",
+            "change_pct": 12.75
+          },
+          {
+            "platform": "Lazada",
+            "change_pct": 10.41
+          },
+          {
+            "platform": "Shopee",
+            "change_pct": 10.33
+          }
+        ],
+        "row_count": 3,
+        "slowest_growing_platform": "Shopee"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MOM-08",
+      "difficulty": 8,
+      "category": "mom_double_filter",
+      "data_source": "csv",
+      "question": "Lazada平台Sports产品线5月revenue的环比变化率是多少？（相比4月）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "change_pct",
+        "value": 14.49
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MOM-09",
+      "difficulty": 9,
+      "category": "mom_abs_change_ranked",
+      "data_source": "csv",
+      "question": "各平台5月revenue相比4月的环比变化率和绝对变化量分别是多少？哪个平台的绝对变化量最大？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "platform",
+        "value_field": "change_pct",
+        "values": [
+          {
+            "platform": "Amazon",
+            "change_pct": 6.67,
+            "change": 2169900.94
+          },
+          {
+            "platform": "Lazada",
+            "change_pct": 12.78,
+            "change": 2642835.02
+          },
+          {
+            "platform": "Shopee",
+            "change_pct": 10.03,
+            "change": 2104281.8
+          }
+        ],
+        "row_count": 3,
+        "largest_change_platform": "Lazada"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "WA-01",
+      "difficulty": 4,
+      "category": "wa_unit_cost",
+      "data_source": "csv",
+      "question": "5月份各平台的单位访客获取成本（ad_cost/visitors）分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "platform",
+        "value_field": "cost_per_visitor",
+        "values": [
+          {
+            "platform": "Amazon",
+            "cost_per_visitor": 0.44
+          },
+          {
+            "platform": "Lazada",
+            "cost_per_visitor": 0.33
+          },
+          {
+            "platform": "Shopee",
+            "cost_per_visitor": 0.26
+          }
+        ],
+        "row_count": 3
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "WA-02",
+      "difficulty": 6,
+      "category": "wa_cvr_by_prod",
+      "data_source": "csv",
+      "question": "4月份各产品线的加权平均转化率(cvr_pct)分别是多少？（按访客数加权：sum(visitors×cvr_pct)/sum(visitors)）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "product_line",
+        "value_field": "weighted_avg_cvr",
+        "values": [
+          {
+            "product_line": "Home",
+            "weighted_avg_cvr": 3.18
+          },
+          {
+            "product_line": "Snacks",
+            "weighted_avg_cvr": 4.77
+          },
+          {
+            "product_line": "Sports",
+            "weighted_avg_cvr": 3.48
+          },
+          {
+            "product_line": "Stationery",
+            "weighted_avg_cvr": 3.12
+          },
+          {
+            "product_line": "Toys",
+            "weighted_avg_cvr": 4.07
+          }
+        ],
+        "row_count": 5
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "WA-03",
+      "difficulty": 6,
+      "category": "wa_price_overall",
+      "data_source": "csv",
+      "question": "5月份整体的加权平均单价(unit_price)是多少？（按访客数加权）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "weighted_avg_unit_price",
+        "value": 120.14
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "WA-04",
+      "difficulty": 7,
+      "category": "wa_effective_price",
+      "data_source": "csv",
+      "question": "4月份各产品线的有效客单价是多少？（有效客单价 = 总revenue / 总有效转化数，有效转化数 = visitors × cvr_pct/100）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "product_line",
+        "value_field": "avg_order_value",
+        "values": [
+          {
+            "product_line": "Home",
+            "avg_order_value": 308.16
+          },
+          {
+            "product_line": "Snacks",
+            "avg_order_value": 53.94
+          },
+          {
+            "product_line": "Sports",
+            "avg_order_value": 219.75
+          },
+          {
+            "product_line": "Stationery",
+            "avg_order_value": 105.62
+          },
+          {
+            "product_line": "Toys",
+            "avg_order_value": 124.57
+          }
+        ],
+        "row_count": 5
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "WA-05",
+      "difficulty": 7,
+      "category": "wa_price_premium",
+      "data_source": "csv",
+      "question": "5月份各平台的加权平均单价(unit_price)和加权平均市场价(market_price)分别是多少？（按visitors加权）价格溢价率是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "platform",
+        "value_field": "price_premium_pct",
+        "values": [
+          {
+            "platform": "Amazon",
+            "price_premium_pct": 3.74,
+            "weighted_avg_unit_price": 151.41,
+            "weighted_avg_market_price": 145.96
+          },
+          {
+            "platform": "Lazada",
+            "price_premium_pct": 2.56,
+            "weighted_avg_unit_price": 115.33,
+            "weighted_avg_market_price": 112.45
+          },
+          {
+            "platform": "Shopee",
+            "price_premium_pct": 5.53,
+            "weighted_avg_unit_price": 100.71,
+            "weighted_avg_market_price": 95.43
+          }
+        ],
+        "row_count": 3
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "WA-06",
+      "difficulty": 8,
+      "category": "wa_conversion_eff",
+      "data_source": "csv",
+      "question": "5月份哪个产品线的单次有效转化产出revenue最高？值是多少？（revenue / (visitors × cvr_pct/100)）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "max_rev_per_conversion",
+        "value": 313.49,
+        "product_line": "Home"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "WA-07",
+      "difficulty": 9,
+      "category": "wa_cvr_mom",
+      "data_source": "csv",
+      "question": "各产品线5月的加权平均转化率(cvr_pct)相比4月变化了多少百分比？（按visitors加权）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "product_line",
+        "value_field": "change_pct",
+        "values": [
+          {
+            "product_line": "Home",
+            "change_pct": 2.49,
+            "previous_weighted_avg_cvr": 3.18,
+            "current_weighted_avg_cvr": 3.26
+          },
+          {
+            "product_line": "Snacks",
+            "change_pct": 0.89,
+            "previous_weighted_avg_cvr": 4.77,
+            "current_weighted_avg_cvr": 4.81
+          },
+          {
+            "product_line": "Sports",
+            "change_pct": 0.62,
+            "previous_weighted_avg_cvr": 3.48,
+            "current_weighted_avg_cvr": 3.5
+          },
+          {
+            "product_line": "Stationery",
+            "change_pct": 0.3,
+            "previous_weighted_avg_cvr": 3.12,
+            "current_weighted_avg_cvr": 3.13
+          },
+          {
+            "product_line": "Toys",
+            "change_pct": -1.56,
+            "previous_weighted_avg_cvr": 4.07,
+            "current_weighted_avg_cvr": 4.01
+          }
+        ],
+        "row_count": 5
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MD-01",
+      "difficulty": 4,
+      "category": "md_simple_rank",
+      "data_source": "csv",
+      "question": "5月份Amazon平台中revenue最高的产品线是哪个？revenue是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "total_revenue",
+        "value": 14537176.79,
+        "product_line": "Home"
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MD-02",
+      "difficulty": 6,
+      "category": "md_share",
+      "data_source": "csv",
+      "question": "5月份各产品线的revenue占比（份额）分别是多少百分比？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "product_line",
+        "value_field": "revenue_share_pct",
+        "values": [
+          {
+            "product_line": "Home",
+            "revenue_share_pct": 41.4
+          },
+          {
+            "product_line": "Sports",
+            "revenue_share_pct": 25.83
+          },
+          {
+            "product_line": "Toys",
+            "revenue_share_pct": 15.82
+          },
+          {
+            "product_line": "Snacks",
+            "revenue_share_pct": 10.49
+          },
+          {
+            "product_line": "Stationery",
+            "revenue_share_pct": 6.46
+          }
+        ],
+        "row_count": 5
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MD-03",
+      "difficulty": 7,
+      "category": "md_top_per_group",
+      "data_source": "csv",
+      "question": "4月份每个产品线中revenue最高的平台分别是什么？revenue分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "product_line",
+        "value_field": "top_platform",
+        "values": [
+          {
+            "product_line": "Home",
+            "top_platform": "Amazon",
+            "total_revenue": 13330630.03
+          },
+          {
+            "product_line": "Snacks",
+            "top_platform": "Amazon",
+            "total_revenue": 3035183.73
+          },
+          {
+            "product_line": "Sports",
+            "top_platform": "Amazon",
+            "total_revenue": 9100091.01
+          },
+          {
+            "product_line": "Stationery",
+            "top_platform": "Amazon",
+            "total_revenue": 2092838.91
+          },
+          {
+            "product_line": "Toys",
+            "top_platform": "Amazon",
+            "total_revenue": 4991653.16
+          }
+        ],
+        "row_count": 5
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MD-04",
+      "difficulty": 7,
+      "category": "md_roi",
+      "data_source": "csv",
+      "question": "5月份各平台的ROI是多少？（ROI = revenue / ad_cost）",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "grouped_values",
+        "group_field": "platform",
+        "value_field": "roi",
+        "values": [
+          {
+            "platform": "Amazon",
+            "roi": 19.31
+          },
+          {
+            "platform": "Lazada",
+            "roi": 16.96
+          },
+          {
+            "platform": "Shopee",
+            "roi": 15.69
+          }
+        ],
+        "row_count": 3
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MD-05",
+      "difficulty": 8,
+      "category": "md_cross_dim",
+      "data_source": "csv",
+      "question": "4月份按平台和产品线交叉分析，访客数(visitors)最高的前5个组合是哪些？访客数分别是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "cross_dimension",
+        "dimensions": [
+          "platform",
+          "product_line"
+        ],
+        "value_field": "total_visitors",
+        "values": [
+          {
+            "platform": "Shopee",
+            "product_line": "Home",
+            "total_visitors": 1249861.0
+          },
+          {
+            "platform": "Shopee",
+            "product_line": "Snacks",
+            "total_visitors": 1206106.0
+          },
+          {
+            "platform": "Shopee",
+            "product_line": "Sports",
+            "total_visitors": 1091727.0
+          },
+          {
+            "platform": "Shopee",
+            "product_line": "Toys",
+            "total_visitors": 970530.0
+          },
+          {
+            "platform": "Amazon",
+            "product_line": "Home",
+            "total_visitors": 948377.0
+          }
+        ],
+        "row_count": 5
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "MD-06",
+      "difficulty": 10,
+      "category": "md_cross_roi_extreme",
+      "data_source": "csv",
+      "question": "5月份按平台×产品线交叉分析ROI（revenue/ad_cost），ROI最高和最低的组合分别是哪些？ROI值是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "values": {
+          "best_platform": "Amazon",
+          "best_product_line": "Stationery",
+          "best_roi": 22.03,
+          "worst_platform": "Shopee",
+          "worst_product_line": "Sports",
+          "worst_roi": 13.8
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "OT-01",
+      "difficulty": 7,
+      "category": "other_std",
+      "data_source": "csv",
+      "question": "5月份每日总revenue的标准差是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "std_daily_revenue",
+        "value": 147499.56
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "OT-02",
+      "difficulty": 7,
+      "category": "other_trend",
+      "data_source": "csv",
+      "question": "对4月份每日总revenue做线性回归趋势分析，斜率是多少？R²是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "values": {
+          "slope": -2840.84,
+          "r_squared": 0.02
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "OT-03",
+      "difficulty": 8,
+      "category": "other_rolling",
+      "data_source": "csv",
+      "question": "计算Shopee平台5月份每天revenue的7日移动平均值，最后一天的移动平均是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "revenue_7d_ma",
+        "value": 707199.68
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "OT-04",
+      "difficulty": 8,
+      "category": "other_weekday",
+      "data_source": "csv",
+      "question": "5月份周末的日均总revenue比工作日高出多少百分比？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "comparison",
+        "values": {
+          "weekend_avg_revenue": 2805682.88,
+          "weekday_avg_revenue": 2551465.67,
+          "change_pct": 9.96
+        }
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    },
+    {
+      "id": "OT-05",
+      "difficulty": 9,
+      "category": "other_corr",
+      "data_source": "csv",
+      "question": "5月份访客数(visitors)和广告费用(ad_cost)之间的相关系数是多少？",
+      "expected_intent": "SIMPLE",
+      "expected_answer": {
+        "type": "single_value",
+        "field": "correlation_coefficient",
+        "value": 0.39
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 30,
+        "value_tolerance": 0.01
+      }
+    }
+  ]
+}

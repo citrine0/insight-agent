@@ -1,0 +1,949 @@
+{
+  "version": "v5",
+  "description": "eval_cases_v5 — 基于v4: 1) C01-C12 change_pct_range→精确change_pct; 2) C11 expected_anomalies清空(主表无异常); 3) C08/C10/C12 suggested_data_types对齐设计文档; 4) C08-C12新增expected_step3(补充数据深度分析预期)",
+  "created_at": "2025-07-14",
+  "data_schema": "店铺经营概况.csv",
+  "schema_note": "单平台单表: 日期×品类×流量来源粒度, 包含流量+交易指标, 不含广告/竞品数据",
+  "group_a_count": 7,
+  "group_b_count": 5,
+  "questions": [
+    {
+      "id": "C01",
+      "question": "8月GMV为什么下降了",
+      "platform": "抖音",
+      "category": "single_anomaly_causal",
+      "expected_route": "complex",
+      "expected_analysis_depth": "causal",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [
+          {
+            "dimension": "traffic",
+            "direction": "down",
+            "change_pct": -18.39
+          },
+          {
+            "dimension": "add_cart_users",
+            "direction": "down",
+            "change_pct": -18.4
+          },
+          {
+            "dimension": "paying_buyers",
+            "direction": "down",
+            "change_pct": -19.77
+          },
+          {
+            "dimension": "pay_orders",
+            "direction": "down",
+            "change_pct": -29.64
+          },
+          {
+            "dimension": "gmv",
+            "direction": "down",
+            "change_pct": -30.25
+          },
+          {
+            "dimension": "pay_items",
+            "direction": "down",
+            "change_pct": -28.05
+          },
+          {
+            "dimension": "avg_price",
+            "direction": "down",
+            "change_pct": -13.06
+          }
+        ],
+        "expected_normal": [
+          "conversion_rate",
+          "unit_price"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "high",
+        "needs_deep_rca": false,
+        "expected_root_causes": [
+          "traffic"
+        ],
+        "expected_suggested_data_types": []
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "流量",
+          "下降",
+          "付费",
+          "投放"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 120,
+        "max_steps": 6
+      },
+      "_v4_changelog": "移除marketing_spend/competitor_price(CSV中不存在); expected_anomalies扩展为全部超8%阈值指标; root_causes精简为traffic"
+    },
+    {
+      "id": "C02",
+      "question": "京东电子品类8月怎么了",
+      "platform": "京东",
+      "category": "price_conversion_tradeoff",
+      "expected_route": "complex",
+      "expected_analysis_depth": "diagnostic",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [
+          {
+            "dimension": "avg_price",
+            "direction": "up",
+            "change_pct": 39.51
+          },
+          {
+            "dimension": "unit_price",
+            "direction": "up",
+            "change_pct": 43.82
+          },
+          {
+            "dimension": "conversion_rate",
+            "direction": "down",
+            "change_pct": -40.62
+          },
+          {
+            "dimension": "paying_buyers",
+            "direction": "down",
+            "change_pct": -39.81
+          },
+          {
+            "dimension": "pay_orders",
+            "direction": "down",
+            "change_pct": -40.11
+          }
+        ],
+        "expected_normal": [
+          "traffic"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "high",
+        "needs_deep_rca": false,
+        "expected_root_causes": [
+          "avg_price"
+        ],
+        "expected_suggested_data_types": []
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "电子",
+          "价格",
+          "上涨",
+          "转化率",
+          "下降"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 120,
+        "max_steps": 6
+      },
+      "_v4_changelog": "depth从causal改为diagnostic; expected_anomalies扩展包含漏斗联动; 增加unit_price; report增加'电子'关键词"
+    },
+    {
+      "id": "C03",
+      "question": "8月GMV有没有异常",
+      "platform": "淘宝",
+      "category": "no_anomaly",
+      "expected_route": "complex",
+      "expected_analysis_depth": "descriptive",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [],
+        "expected_normal": [
+          "traffic",
+          "conversion_rate",
+          "avg_price",
+          "gmv"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "high",
+        "needs_deep_rca": false,
+        "expected_root_causes": [],
+        "expected_suggested_data_types": []
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "正常",
+          "波动"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 90,
+        "max_steps": 5
+      },
+      "_v4_changelog": "无变更"
+    },
+    {
+      "id": "C04",
+      "question": "8月流量是不是降了",
+      "platform": "淘宝",
+      "category": "threshold_boundary",
+      "expected_route": "complex",
+      "expected_analysis_depth": "descriptive",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [],
+        "expected_normal": [
+          "traffic",
+          "conversion_rate",
+          "avg_price"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "high",
+        "needs_deep_rca": false,
+        "expected_root_causes": [],
+        "expected_suggested_data_types": []
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "流量",
+          "正常"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 90,
+        "max_steps": 5
+      },
+      "_v4_changelog": "无变更(注入-7.5%在8%阈值内; baseline噪声可能导致个别指标越界,属threshold_boundary预期行为)"
+    },
+    {
+      "id": "C05",
+      "question": "客单价为什么上涨",
+      "platform": "京东",
+      "category": "ratio_metric_anomaly",
+      "expected_route": "complex",
+      "expected_analysis_depth": "causal",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [
+          {
+            "dimension": "avg_price",
+            "direction": "up",
+            "change_pct": 9.6
+          },
+          {
+            "dimension": "gmv",
+            "direction": "up",
+            "change_pct": 10.38
+          }
+        ],
+        "expected_normal": [
+          "traffic",
+          "conversion_rate"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "high",
+        "needs_deep_rca": false,
+        "expected_root_causes": [
+          "avg_price"
+        ],
+        "expected_suggested_data_types": []
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "客单价",
+          "食品",
+          "上涨"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 120,
+        "max_steps": 6
+      },
+      "_v4_changelog": "change_pct_range调宽适配聚合后实际值; 增加gmv为expected_anomaly(食品金额暴增拉高整体GMV)"
+    },
+    {
+      "id": "C06",
+      "question": "哪个品类出了问题",
+      "platform": "抖音",
+      "category": "cross_dimension_drill",
+      "expected_route": "complex",
+      "expected_analysis_depth": "diagnostic",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [
+          {
+            "dimension": "traffic",
+            "direction": "down",
+            "change_pct": -22.34
+          },
+          {
+            "dimension": "add_cart_users",
+            "direction": "down",
+            "change_pct": -22.34
+          },
+          {
+            "dimension": "paying_buyers",
+            "direction": "down",
+            "change_pct": -20.32
+          },
+          {
+            "dimension": "pay_orders",
+            "direction": "down",
+            "change_pct": -17.35
+          },
+          {
+            "dimension": "gmv",
+            "direction": "down",
+            "change_pct": -16.54
+          }
+        ],
+        "expected_normal": [
+          "avg_price",
+          "conversion_rate"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "high",
+        "needs_deep_rca": false,
+        "expected_root_causes": [
+          "traffic"
+        ],
+        "expected_suggested_data_types": []
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "美妆",
+          "流量",
+          "下降"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 120,
+        "max_steps": 6
+      },
+      "_v4_changelog": "expected_anomalies扩展覆盖全部超阈值联动指标; 移除不存在的competitor_price"
+    },
+    {
+      "id": "C07",
+      "question": "7月中到8月中转化率变化",
+      "platform": "淘宝",
+      "category": "custom_time_window",
+      "expected_route": "complex",
+      "expected_analysis_depth": "descriptive",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [
+          {
+            "dimension": "conversion_rate",
+            "direction": "down",
+            "change_pct": -45.25
+          }
+        ],
+        "expected_normal": [
+          "avg_price"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "high",
+        "needs_deep_rca": false,
+        "expected_root_causes": [],
+        "expected_suggested_data_types": []
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "转化率",
+          "下降"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 120,
+        "max_steps": 6
+      },
+      "_v4_changelog": "expected_root_causes从['conversion_rate']改为[](descriptive深度不应期望root_cause, 消除逻辑矛盾)"
+    },
+    {
+      "id": "C08",
+      "question": "微信商城8月为什么不行了",
+      "platform": "微信小店",
+      "category": "multi_factor_independent",
+      "expected_route": "complex",
+      "expected_analysis_depth": "causal",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [
+          {
+            "dimension": "traffic",
+            "direction": "down",
+            "change_pct": -49.53
+          },
+          {
+            "dimension": "conversion_rate",
+            "direction": "down",
+            "change_pct": -44.93
+          },
+          {
+            "dimension": "paying_buyers",
+            "direction": "down",
+            "change_pct": -72.21
+          },
+          {
+            "dimension": "pay_orders",
+            "direction": "down",
+            "change_pct": -70.28
+          },
+          {
+            "dimension": "gmv",
+            "direction": "down",
+            "change_pct": -69.94
+          }
+        ],
+        "expected_normal": [
+          "avg_price"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "medium",
+        "needs_deep_rca": true,
+        "expected_root_causes": [
+          "traffic",
+          "conversion_rate"
+        ],
+        "expected_suggested_data_types": [
+          "order_detail",
+          "ad_campaign"
+        ]
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "流量",
+          "转化",
+          "下降",
+          "数据有限"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 180,
+        "max_steps": 8
+      },
+      "_v4_changelog": "expected_anomalies扩展覆盖联动指标",
+      "expected_step3": {
+        "supplementary_data_types": [
+          "order_detail",
+          "ad_campaign"
+        ],
+        "expected_deep_findings": [
+          {
+            "finding": "repeat_customer_cliff",
+            "description": [
+              "老客",
+              "订单",
+              "断崖",
+              "下降"
+            ],
+            "metric": "老客订单数",
+            "july_value": 2919,
+            "august_value": 716,
+            "change_pct": -75.47
+          },
+          {
+            "finding": "new_customer_cancel_surge",
+            "description": [
+              "新客",
+              "取消率",
+              "取消",
+              "暴增"
+            ],
+            "metric": "新客取消率",
+            "july_value": 9.9,
+            "august_value": 59.0,
+            "unit": "%"
+          },
+          {
+            "finding": "ad_roi_stable",
+            "description": [
+              "广告",
+              "ROI",
+              "持平",
+              "排除"
+            ],
+            "metric": "ROI",
+            "july_value": 3.32,
+            "august_value": 3.24,
+            "change_pct": -2.41
+          }
+        ],
+        "expected_root_cause_summary": "老客复购断崖(-75%)叠加新客质量崩塌(取消率59%)，广告本身效率正常",
+        "must_mention_keywords": [
+          "老客",
+          "复购",
+          "下降",
+          "新客",
+          "取消"
+        ]
+      }
+    },
+    {
+      "id": "C09",
+      "question": "服装品类转化率为什么跌了",
+      "platform": "淘宝",
+      "category": "external_competitor_factor",
+      "expected_route": "complex",
+      "expected_analysis_depth": "causal",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [
+          {
+            "dimension": "conversion_rate",
+            "direction": "down",
+            "change_pct": -45.31
+          },
+          {
+            "dimension": "paying_buyers",
+            "direction": "down",
+            "change_pct": -46.53
+          },
+          {
+            "dimension": "pay_orders",
+            "direction": "down",
+            "change_pct": -45.06
+          },
+          {
+            "dimension": "gmv",
+            "direction": "down",
+            "change_pct": -45.14
+          }
+        ],
+        "expected_normal": [
+          "traffic",
+          "avg_price"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "medium",
+        "needs_deep_rca": true,
+        "expected_root_causes": [
+          "conversion_rate"
+        ],
+        "expected_suggested_data_types": [
+          "competitor_monitor"
+        ]
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "服装",
+          "转化率",
+          "下降",
+          "竞品",
+          "数据有限"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 180,
+        "max_steps": 8
+      },
+      "_v4_changelog": "expected_anomalies扩展覆盖联动指标",
+      "expected_step3": {
+        "supplementary_data_types": [
+          "competitor_monitor"
+        ],
+        "expected_deep_findings": [
+          {
+            "finding": "competitor_price_war",
+            "description": [
+              "竞品",
+              "降价",
+              "促销",
+              "大幅"
+            ],
+            "metric": "竞品均价",
+            "july_value": 164,
+            "august_value": 107,
+            "change_pct": -34.76
+          },
+          {
+            "finding": "competitor_promo_surge",
+            "description": [
+              "竞品",
+              "促销",
+              "活动"
+            ],
+            "metric": "竞品促销条数",
+            "july_value": 0,
+            "august_value": 62
+          },
+          {
+            "finding": "competitor_sales_double",
+            "description": [
+              "竞品",
+              "销量",
+              "翻倍"
+            ],
+            "metric": "竞品估算销量均值",
+            "july_value": 2030,
+            "august_value": 3902,
+            "change_pct": 92.22
+          }
+        ],
+        "expected_root_cause_summary": "竞品D/E在8月发起大促(降价35%+全月促销)，抢夺本店服装客群导致转化率下跌",
+        "must_mention_keywords": [
+          "竞品",
+          "促销",
+          "降价",
+          "服装"
+        ]
+      }
+    },
+    {
+      "id": "C10",
+      "question": "京东全线下滑什么原因",
+      "platform": "京东",
+      "category": "systemic_channel_decline",
+      "expected_route": "complex",
+      "expected_analysis_depth": "causal",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [
+          {
+            "dimension": "traffic",
+            "direction": "down",
+            "change_pct": -49.97
+          },
+          {
+            "dimension": "conversion_rate",
+            "direction": "down",
+            "change_pct": -51.88
+          },
+          {
+            "dimension": "paying_buyers",
+            "direction": "down",
+            "change_pct": -75.93
+          },
+          {
+            "dimension": "pay_orders",
+            "direction": "down",
+            "change_pct": -75.16
+          },
+          {
+            "dimension": "gmv",
+            "direction": "down",
+            "change_pct": -75.04
+          }
+        ],
+        "expected_normal": [
+          "avg_price"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "medium",
+        "needs_deep_rca": true,
+        "expected_root_causes": [
+          "traffic",
+          "conversion_rate"
+        ],
+        "expected_suggested_data_types": [
+          "inventory_status"
+        ]
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "下降",
+          "系统",
+          "全品类",
+          "数据有限"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 180,
+        "max_steps": 8
+      },
+      "_v4_changelog": "expected_anomalies扩展覆盖联动指标; gmv从root_causes移除(是结果不是原因)",
+      "expected_step3": {
+        "supplementary_data_types": [
+          "inventory_status",
+          "refund_after_sale"
+        ],
+        "expected_deep_findings": [
+          {
+            "finding": "shipping_delay_surge",
+            "description": [
+              "发货",
+              "时长",
+              "暴增",
+              "发货时长"
+            ],
+            "metric": "平均发货时长(小时)",
+            "july_value": 17.9,
+            "august_value": 56.7,
+            "change_pct": 216.76,
+            "onset_date": "2025-08-05"
+          },
+          {
+            "finding": "stockout_rate_spike",
+            "description": [
+              "缺货",
+              "缺货率",
+              "飙升"
+            ],
+            "metric": "缺货率",
+            "july_value": 0.0,
+            "august_value": 13.4,
+            "unit": "%"
+          },
+          {
+            "finding": "logistics_refund_surge",
+            "description": [
+              "物流",
+              "退款",
+              "暴增"
+            ],
+            "metric": "物流太慢退款笔数",
+            "july_value": 207,
+            "august_value": 601,
+            "change_pct": 190.34
+          }
+        ],
+        "expected_root_cause_summary": "京东仓储8月5日起出现系统性问题：发货延迟3倍+缺货15%，导致物流退款暴增，全线指标下滑",
+        "must_mention_keywords": [
+          "发货",
+          "物流",
+          "延迟",
+          "缺货",
+          "仓储"
+        ]
+      }
+    },
+    {
+      "id": "C11",
+      "question": "淘宝的投放效率为什么变差了",
+      "platform": "淘宝",
+      "category": "roi_anomaly",
+      "expected_route": "complex",
+      "expected_analysis_depth": "causal",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [],
+        "expected_normal": [
+          "traffic",
+          "conversion_rate",
+          "avg_price",
+          "gmv"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "medium",
+        "needs_deep_rca": true,
+        "expected_root_causes": [],
+        "expected_suggested_data_types": [
+          "ad_campaign"
+        ]
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "投放",
+          "ROI",
+          "效率",
+          "数据有限"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 180,
+        "max_steps": 8
+      },
+      "_v4_changelog": "root_causes从marketing_spend改为conversion_rate(CSV中无广告数据,可观测到的是转化下降); expected_anomalies扩展",
+      "expected_step3": {
+        "supplementary_data_types": [
+          "ad_campaign"
+        ],
+        "expected_deep_findings": [
+          {
+            "finding": "total_ad_cost_surge",
+            "description": [
+              "广告",
+              "花费",
+              "暴增",
+              "总花费"
+            ],
+            "metric": "广告总花费",
+            "july_value": 617170,
+            "august_value": 2211566,
+            "change_pct": 258.34
+          },
+          {
+            "finding": "brand_ad_waste",
+            "description": [
+              "品牌广告",
+              "花费",
+              "ROI",
+              "品牌"
+            ],
+            "metric": "品牌广告花费",
+            "july_value": 0,
+            "august_value": 1572063,
+            "detail": "品牌广告ROI=0.01，占8月总花费71%"
+          },
+          {
+            "finding": "overall_roi_collapse",
+            "description": [
+              "整体",
+              "ROI",
+              "暴跌"
+            ],
+            "metric": "ROI",
+            "july_value": 4.32,
+            "august_value": 1.26,
+            "change_pct": -70.83
+          },
+          {
+            "finding": "performance_ad_stable",
+            "description": [
+              "效果广告",
+              "搜索",
+              "信息流",
+              "ROI",
+              "稳定"
+            ],
+            "metric": "搜索推广ROI",
+            "july_value": 4.4,
+            "august_value": 4.15,
+            "change_pct": -5.68
+          }
+        ],
+        "expected_root_cause_summary": "8月新增品牌广告(品牌焕新-开屏曝光)花费157万但几乎零转化(ROI=0.01)，拉低整体ROI从4.32→1.26，效果广告本身正常",
+        "must_mention_keywords": [
+          "品牌广告",
+          "ROI",
+          "花费",
+          "效率"
+        ]
+      }
+    },
+    {
+      "id": "C12",
+      "question": "为什么转化率骤降",
+      "platform": "抖音",
+      "category": "multi_channel_conversion_drop",
+      "expected_route": "complex",
+      "expected_analysis_depth": "causal",
+      "data_files": [
+        "店铺经营概况.csv"
+      ],
+      "expected_step1": {
+        "expected_anomalies": [
+          {
+            "dimension": "conversion_rate",
+            "direction": "down",
+            "change_pct": -32.17
+          },
+          {
+            "dimension": "paying_buyers",
+            "direction": "down",
+            "change_pct": -31.84
+          },
+          {
+            "dimension": "pay_orders",
+            "direction": "down",
+            "change_pct": -29.37
+          },
+          {
+            "dimension": "gmv",
+            "direction": "down",
+            "change_pct": -31.67
+          }
+        ],
+        "expected_normal": [
+          "traffic",
+          "avg_price"
+        ]
+      },
+      "expected_step2": {
+        "confidence": "medium",
+        "needs_deep_rca": true,
+        "expected_root_causes": [
+          "conversion_rate"
+        ],
+        "expected_suggested_data_types": [
+          "product_performance",
+          "promotion_calendar"
+        ]
+      },
+      "expected_report": {
+        "must_mention_keywords": [
+          "转化率",
+          "下降",
+          "数据有限"
+        ]
+      },
+      "evaluation_criteria": {
+        "response_time_limit_sec": 180,
+        "max_steps": 8
+      },
+      "_v4_changelog": "expected_anomalies扩展覆盖联动指标",
+      "expected_step3": {
+        "supplementary_data_types": [
+          "product_performance",
+          "promotion_calendar"
+        ],
+        "expected_deep_findings": [
+          {
+            "finding": "top_sku_delisted",
+            "description": [
+              "爆品",
+              "下架"
+            ],
+            "detail": "SKU_美_001, SKU_美_002, SKU_服_001, SKU_服_002 于8/10下架",
+            "onset_date": "2025-08-10"
+          },
+          {
+            "finding": "promo_expired",
+            "description": [
+              "美妆",
+              "促销",
+              "到期"
+            ],
+            "detail": "活动PROMO_08_001(8月美妆节-面膜套装直降30%)于8/10结束"
+          },
+          {
+            "finding": "delisted_sku_gmv_loss",
+            "description": [
+              "下架",
+              "SKU",
+              "GMV",
+              "损失"
+            ],
+            "metric": "下架SKU合计GMV",
+            "july_value": 628415,
+            "august_value": 170769,
+            "change_pct": -72.83
+          }
+        ],
+        "expected_root_cause_summary": "8月10日促销到期+4个核心爆品同时下架，导致美妆+服装转化率骤降，是GMV下降的直接原因",
+        "must_mention_keywords": [
+          "下架",
+          "爆品",
+          "促销",
+          "到期"
+        ]
+      }
+    }
+  ]
+}
