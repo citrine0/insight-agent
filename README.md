@@ -130,18 +130,18 @@ LLM调用: 4次
 
 | 分析深度 | Case 数 | 通过 | 测试能力 |
 |---------|--------|------|---------|
-| descriptive | 3 | [3]/3 | 误报抑制、阈值判断 |
-| diagnostic / causal | 4 | [4]/4 | 异常检测、因果归因 |
-| causal + Deep RCA | 5 | [4]/5 | 信心判断、补充数据分析 |
-| **合计** | **12** | **[11]/12** | |
+| descriptive | 3 | 3/3 | 误报抑制、阈值判断 |
+| diagnostic / causal | 4 | 4/4 | 异常检测、因果归因 |
+| causal + Deep RCA | 5 | 4/5 | 信心判断、补充数据分析 |
+| **合计** | **12** | **11/12** | |
 
 ### 版本迭代
 
 | 版本 | 通过率 | 核心改进 |
 |------|-------|---------|
-| v8 | [8]/12 | Quick Scan 三步架构 |
-| v9 | [11]/12 | 统一管线 + 自适应深度 |
-| v9.9 | [11]/12 | 补充数据全量扫描 + 死代码清理 |
+| v8 | 8/12 | Quick Scan 三步架构 |
+| v9 | 11/12 | 统一管线 + 自适应深度 |
+| v9.9 | 11/12 | 补充数据全量扫描 + 死代码清理 |
 
 > 详见 [evaluation/pipeline/version_comparison.md](evaluation/pipeline/version_comparison.md) · [evaluation/python_agent/accuracy_improvement.md](evaluation/python_agent/accuracy_improvement.md)
 
